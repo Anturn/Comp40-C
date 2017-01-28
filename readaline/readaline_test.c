@@ -21,21 +21,16 @@ int main ( int argc, char *argv[] )
 void  test_readaline()
 {
         FILE *fp;
-	char **datapp = NULL;
-        
-        fp = open_file("test1.txt");
-	do{
-		printf("Get in ?");
-		readaline(fp,datapp);
-		
-		/*printf("%s\n",*datapp);*/	
-		printf("Line 32 right?");
-		
-		
-	}while(datapp);
-        readaline( fp, datapp );
-        close_file( fp );
+	char *datapp = "";
 
+        fp = open_file("test1.txt");
+
+        do{
+                printf( "got line : %s\n", datapp );
+		readaline( fp, &datapp );
+        } while(datapp);
+
+        close_file( fp );
 }
 
 FILE* open_file ( char* filename ) 
