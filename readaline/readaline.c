@@ -40,6 +40,10 @@ size_t readaline( FILE *inputfd, char **datapp )
                 do {               
                         capacity = expand_if_full( &linep, capacity, i );
                         linep[i] = fgetc( inputfd );
+                        /*
+                        if ( linep[i] == EOF ) {
+                                runtime_error( "Error reading file" );
+                        }*/ 
                 } while ( linep[ i++ ] != '\n' );
                 set_size ( &linep, i );
                 *datapp = linep; 

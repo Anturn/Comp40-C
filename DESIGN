@@ -1,0 +1,121 @@
+ 
+ *
+ *      DESIGN
+ *      by Ashton Stephens and Rui Qin, 1/29/17
+ *      Files, Pictures and Interfaces
+ *      
+ *      Describes the general layout of Simlines Program and the
+ *      structures used. Also includes testing strategy.
+ 
+ *---------------------------------------------------------------*
+ |                                                               |
+ |               Simline - Design Doc                            |
+ |                                                               |
+ *---------------------------------------------------------------*
+
+* Problem : 
+        Implementation of a class that determines the number of
+        similar lines in a different files.
+
+
+* Architecture
+*---------------
+
+Data Structures:
+
+        Match Group Representation:
+                -Atom pointing to match phrase
+                -Hold number of each file that contians the target
+                -Number of times each file contains the target
+                
+                | struct MatchGroup {
+                |         const   char*   match_phrase;
+                |         struct  void*   file_phrase_counts;
+                | };
+                | 
+                | /*
+                |  *      file_phrase_counts is a Seq_T holding
+                |  *      FilePhraseCounts that hold information about how 
+                |  *      many of the phrase are contained in each file
+                |  */
+                |
+                | struct FilePhraseCount {
+                |         int file_num;
+                |         int phrase_num;      
+                | };
+
+        Match Group Holding Representation:
+                Key Value table 
+                        Key:    atom pointing to clean match phrase.
+                        Value:  match group.       
+
+        Match Phrases That Have Matches:
+                Sequence of atoms pointing to match phrases that have more
+                than one presence in all files combined.
+                
+
+* Additional
+*-----------------
+
+        Invariants
+                - All atoms will be the same if they point to the same info
+                - Hanson's Table will return NULL when the input key is an
+                        atom appearing for the first time in the files
+                - Files will be processed in the order they are placed into
+                        main's arguments.
+        
+        Determining Simlines Groups:
+                The Sequence that holds the match phrase atoms that have
+                more than one appearance in the input files will be removed 
+                from the Sequence and used to get the MatchGroups from the
+                table as these serve as keys. From there a specifically
+                designed function will handle printing to console.
+
+
+*---------------------------------------
+| Readaline Testing:                     
+*---------------------------------------
+
+Testing Method:
+        
+        Using a test function to test individual test cases. Read in
+        lines from predictable files and outputting the contents to
+        a separate file, matching the lines to the input file.
+
+Test Cases:
+
+        - Reading in a completely blank file
+        - Reading in a file with very long lines
+        - File opened without reading 
+                (  fopen( "filename.txt" , 'a' ) )
+        - Causing some sort of reading error half way through ( ? )
+        - Filling up memory while reading in.
+        - Closing file before passing it to readaline.
+
+        
+*---------------------------------------
+| Simlines Testing:                     
+*---------------------------------------
+
+Testing Method:
+        
+        Using an outside function to run the program on a variety of
+        specifically set up files to hit edge cases. 
+         
+Test Cases:
+
+        - No input parameters
+        - a name of a folder is added as argument
+        - File with lines that contain only non-word characters
+        - Files of the same lines with different character casing
+        - Files of the same lines with spaces in front and behind
+        - Files edited while program is running .. ? 
+        - Filling up RAM with memory while running simlines.        
+        - given file without propper file permission
+        - files that don't exist
+        - file doesn't hold text
+        - blank files.
+        
+        ( blank lines..? )
+
+

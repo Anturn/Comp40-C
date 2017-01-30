@@ -89,7 +89,7 @@ brightness: brightness.o
 	$(CC) $(LDFLAGS) -o brightness brightness.o $(LDLIBS)
 
 readaline_test: readaline.o readaline_test.o
-	$(CC) $(LDFLAGS) -o readaline_test readaline_test.o readaline.o $(LDLIBS)
+	$(CC) $(LDFLAGS) -o readaline_test readaline_test.o readaline.o $(LDLIBS)\
 
 simlines: simlines.o readaline.o
 	$(CC) $(LDFLAGS) -o simlines  simlines.o readaline.o $(LDLIBS)
