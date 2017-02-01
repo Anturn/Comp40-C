@@ -23,7 +23,8 @@ void runtime_error ( char *error );
 /* takes in a file pointer and a pointer to a char array and
  * fills the array with the next line of file. Returns the 
  * number bytes at the location pointed to by *datapp. relies
- * on client freeing memory allocated to *datapp.
+ * on client freeing memory allocated to *datapp. sets *datapp
+ * to NULL on EOF, and returns 0
  */
 size_t readaline( FILE *inputfd, char **datapp ) 
 {        
@@ -40,10 +41,9 @@ size_t readaline( FILE *inputfd, char **datapp )
                 do {               
                         capacity = expand_if_full( &linep, capacity, i );
                         linep[i] = fgetc( inputfd );
-                        /*
                         if ( linep[i] == EOF ) {
                                 runtime_error( "Error reading file" );
-                        }*/ 
+                        } 
                 } while ( linep[ i++ ] != '\n' );
                 set_size ( &linep, i );
                 *datapp = linep; 

@@ -11,7 +11,9 @@ void  close_file( FILE *file_ptr );
 void  test_readaline();
 void  parse_input( int argc, char* argv[] );
 
+void clean_line(char **datapp);
 
+void test_clean_line();
 void test_blank_file();
 void test_long_lines();
 void test_open_without_reading();
@@ -29,7 +31,9 @@ void test_closed_file();
 int main ( int argc, char *argv[] ) 
 {
         parse_input( argc, argv );
-
+        
+        test_clean_line();
+        /*
         test_blank_file();
         test_long_lines();
         test_open_without_reading();
@@ -37,14 +41,55 @@ int main ( int argc, char *argv[] )
 	test_reading_error();
         test_filling_memory();
         
+
         test_closed_file();
-        /**/
+        */
 
 }
 
+/* turn all non-word groups of characters into a single space,
+ * and to add a null character at the end 
+ * */
+char* clean_line( char **datapp, size_t num_bytes )
+{
+                do {               
+                        capacity = expand_if_full( &linep, capacity, i );
+                        linep[i] = fgetc( inputfd );
+                        /*
+                        if ( linep[i] == EOF ) {
+                                runtime_error( "Error reading file" );
+                        }*/ 
+                } while ( linep[ i++ ] != '\n' );
+                set_size ( &linep, i );
+                *datapp = linep; 
+                return sizeof( char ) * i;
+
+}
+
+void test_clean_line()
+{
+        File *fp;
+        char *datap;
+        int k;
+        fp = open_file("long_test.txt");
+        size_t num_bytes;
+
+        do{
+		
+                printf( "%s\n", clean_line( &datap, num_bytes ));
+                 
+                free(datap);
+                num_bytes = readaline( fp, &datap );
+                
+                /* 
+                        clean_line( &datap, num_bytes );
+                */
 
 
+        } while( datap );
 
+        close_file( fp );
+}
 
 void test_blank_file()
 {
