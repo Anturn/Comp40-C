@@ -13,18 +13,16 @@
 #include "readaline.h" 
 #include "MatchGroup.h"
 #include "clean_line.h"
+#include "errors.h"
 
 void free_table_element ( const void *key, void **value, void *cl );
-char in_sequence ( Seq_T sequence, const char *query );
+char in_sequence ( Seq_T sequence, MatchGroup *query );
 void check_my_input( int argc, char *argv[] );
 void run_simlines ( int argc, char* argv[] );
-void process_all_files_into_table ( int argc,   char *argv[], 
-                                    Seq_T matches,  Table_T table );
+void process_all_files_into_table ( int argc,   char *argv[], Seq_T matches,  Table_T table );
 void process_file_into_table ( FILE *fp, int i, Table_T table, Seq_T matches );
-void put_into_table(   char* line,     int line_num,
-                        int file_num,   Table_T table,  Seq_T matches );
+void put_into_table(   char* line,     int line_num, int file_num,   Table_T table,  Seq_T matches );
 void print_similar_lines ( Seq_T matches, char *argv[] );
-
 void exit_program ( Seq_T matches, Table_T table );
 
 /* ---------------------------------------------- */
@@ -68,15 +66,14 @@ void print_similar_lines ( Seq_T matches, char *argv[] )
                 for ( i = 0; i < MG_length; i++ ) {
                         FPC_length = FilePhraseCount_data( fpc_array[i], &datap );
                         for ( j = 0; j < FPC_length; j++ ) {
-                                printf( "%-27s%i\n",argv[ fpc_array[i]-> file_num ], datap[j] );
+                                printf( "%-20s %7i\n",argv[ fpc_array[i]-> file_num ], datap[j] );
                         }
                         free( datap );
                         FilePhraseCount_free( (fpc_array[i]) );
                 }
+                printf( "\n" );
                 free( fpc_array );
         }
-        /* MatchGroup_print( my_struct ); */
-
 }
 
 void process_all_files_into_table ( int argc,   char *argv[],
@@ -86,10 +83,10 @@ void process_all_files_into_table ( int argc,   char *argv[],
         int i;
         
         for ( i = 1; i < argc; i++ ){
-                fp = fopen ( argv[i], "r" );
+                fp = fopen_cre ( argv[i], "r" );
                 process_file_into_table ( fp, i, table, matches );
                 fclose ( fp );
-        }   
+        } 
 }
 
 /*  Take a file pointer, an int i, a table, and a secuence of matches. All
@@ -101,12 +98,17 @@ void process_file_into_table ( FILE *fp, int i, Table_T table, Seq_T matches )
 {
         char    *line;
         size_t  length;
-        int     line_num = 0; 
+        int     line_num = 1; 
 
         length = readaline( fp, &line );
         while ( length != 0 ) {
-                clean_line ( &line, length );
-                put_into_table ( line, line_num, i, table, matches );
+                clean_line ( &line, length ); 
+                
+                if ( line != NULL ){
+                        put_into_table ( line, line_num, i, table, matches );
+                }
+
+                free( line );
                 line_num++;
                 length = readaline ( fp, &line );
         } 
@@ -119,12 +121,12 @@ void put_into_table (   char* line,     int line_num,
         const char *key = Atom_string( line ); 
         MatchGroup *group;
 
-        group = Table_get ( table, key ); /* possible to place &line */
+        group = Table_get ( table, key ); 
 
         if ( group == NULL ) {
                 group = MatchGroup_new( key );                
-        } else if( !in_sequence( matches, key ) ) {
-                Seq_addhi( matches, group ); /* */
+        } else if( !in_sequence( matches, group ) ) {
+                Seq_addhi( matches, group ); 
         }
                 
         MatchGroup_add( group, file_num, line_num );
@@ -132,7 +134,7 @@ void put_into_table (   char* line,     int line_num,
 }
 
 
-char in_sequence ( Seq_T sequence, const char *query ) 
+char in_sequence ( Seq_T sequence, MatchGroup *query ) 
 {
         int length = Seq_length( sequence );
         int i;
@@ -159,33 +161,6 @@ void exit_program( Seq_T matches, Table_T table )
 void free_table_element ( const void *key, void **value, void *cl ) {
         MatchGroup_free( *value );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

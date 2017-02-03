@@ -10,86 +10,131 @@ FILE* open_file ( char *filename );
 void  close_file( FILE *file_ptr );
 void  test_readaline();
 void  parse_input( int argc, char* argv[] );
-
-void clean_line(char **datapp);
-
-void test_clean_line();
 void test_blank_file();
 void test_long_lines();
 void test_open_without_reading();
 void test_reading_error();
 void test_filling_memory();
 void test_closed_file();
-
-
-
-
-
-
-
-
-int main ( int argc, char *argv[] ) 
-{
-        parse_input( argc, argv );
-        
-        test_clean_line();
+char is_word_char ( char c );
+int  if_full_expand ( char **linepp, int capacity, int num );
         /*
         test_blank_file();
         test_long_lines();
         test_open_without_reading();
-	
 	test_reading_error();
         test_filling_memory();
-        
-
         test_closed_file();
         */
+ 
+
+
+
+/* 
+ *
+ * */
+void clean_line(char **datapp, size_t num_bytes);
+void test_clean_line();
+
+int main ( int argc, char *argv[] ) 
+{
+        parse_input( argc, argv );
+        test_clean_line();
+       /*return */EXIT_SUCCESS;
 
 }
 
-/* turn all non-word groups of characters into a single space,
- * and to add a null character at the end 
- * */
-char* clean_line( char **datapp, size_t num_bytes )
-{
-                do {               
-                        capacity = expand_if_full( &linep, capacity, i );
-                        linep[i] = fgetc( inputfd );
-                        /*
-                        if ( linep[i] == EOF ) {
-                                runtime_error( "Error reading file" );
-                        }*/ 
-                } while ( linep[ i++ ] != '\n' );
-                set_size ( &linep, i );
-                *datapp = linep; 
-                return sizeof( char ) * i;
+/*----------------------------------------------------------------------- */
 
+
+
+
+
+/* turn all non-word groups of characters into a single space,
+ * and to add a null character at the end of datapp 
+ * */
+void clean_line( char **datapp, size_t num_bytes )
+ {
+        int  length = num_bytes, capacity = 10;
+        char this_is_word, last_is_word = 0, *clean;
+        int  i, length_clean = 0;
+        clean = malloc( sizeof( char ) * capacity );
+
+        /**datapp = realloc( (*datapp), length++ );*/
+        for ( i = 0; i < length; i++ ) {
+                capacity = if_full_expand ( &clean, capacity, length_clean );
+                this_is_word = is_word_char((*datapp)[i]);                      
+                if ( this_is_word ) {
+                        clean[ length_clean++ ] = (*datapp)[i]; 
+                } else if ( last_is_word ) {
+                        clean[ length_clean++ ] = 32 ; 
+                }
+                last_is_word = this_is_word;
+        }
+
+        if ( length_clean != 0 && clean[ length_clean-1 ] == 32 ) {
+                clean[ length_clean-1 ] = 0;
+        } else {
+                capacity = if_full_expand( datapp, capacity, length_clean );
+                clean[ length_clean ] = 0; 
+        }       
+        free( *datapp );
+        (*datapp) = clean;
+        return; 
 }
 
 void test_clean_line()
 {
-        File *fp;
+        FILE *fp = open_file("clean_test.txt");
         char *datap;
-        int k;
-        fp = open_file("long_test.txt");
         size_t num_bytes;
-
-        do{
-		
-                printf( "%s\n", clean_line( &datap, num_bytes ));
-                 
+        num_bytes = readaline( fp, &datap );
+       
+        while ( datap ) {
+                clean_line( &datap, num_bytes ); 
+                printf( "%s\n", datap );
                 free(datap);
                 num_bytes = readaline( fp, &datap );
-                
-                /* 
-                        clean_line( &datap, num_bytes );
-                */
 
-
-        } while( datap );
+        };
 
         close_file( fp );
 }
+
+/* returns non-zero value if it is a word char */
+char is_word_char ( char c )
+{
+        return ((c >= 65 && c<= 90 ) ||
+                (c >= 97 && c<= 122) ||
+                (c >= 48 && c<= 57 ) ||
+                (c == 95));
+}
+
+/* */
+int if_full_expand( char **linepp, int capacity, int num )
+{
+        if ( num == capacity ) {
+                capacity *= 2;
+                *linepp = realloc ( *linepp, sizeof( char ) * capacity ); 
+        }
+        return capacity;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void test_blank_file()
 {

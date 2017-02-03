@@ -24,7 +24,7 @@ EXECUTABLES = brightness simlines
 #
 # Add your own .h files to the right side of the assingment below.
 
-INCLUDES = MatchGroup.h  
+INCLUDES = MatchGroup.h clean_line.h errors.h 
 
 # Do all C compies with gcc (at home you could try clang)
 CC = gcc
@@ -41,7 +41,7 @@ IFLAGS = -I. -I$(COMP40)/include -I$(HANSON)/include/cii
 
 
 # the next three lines enable you to compile and link against course software
-CFLAGS =  -g -std=c99 -Wall -Wextra -Werror -Wfatal-errors -pedantic $(IFLAGS)
+CFLAGS =  -g -std=c99 -Wall -Wextra -Wfatal-errors -pedantic $(IFLAGS)
 LIBS = $(CIILIBS) -lm    
 LFLAGS = -L$(COMP40)/lib64
 
@@ -87,9 +87,20 @@ clean:
 brightness: brightness.o
 	$(CC) $(LDFLAGS) -o brightness brightness.o $(LDLIBS)
 
-simlines_test: main.o
-	$(CC) $(LDFLAGS) -o test_simlines main.o $(LDLIBS)
+simlines: main.o readaline.o clean_line.o MatchGroup.o errors.o
+	$(CC) $(LDFLAGS) -o simlines main.o MatchGroup.o readaline.o\
+		clean_line.o  errors.o $(LDLIBS) && rm *.o
 
-simlines: simlines.o readaline.o
-	$(CC) $(LDFLAGS) -o simlines  simlines.o readaline.o $(LDLIBS)
+#simlines: simlines.o readaline.o
+#	$(CC) $(LDFLAGS) -o simlines  simlines.o readaline.o $(LDLIBS)
+
+
+
+
+
+
+
+
+
+
 

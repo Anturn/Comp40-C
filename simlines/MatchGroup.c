@@ -2,9 +2,10 @@
  */
 
 #include <seq.h>
-#include "MatchGroup.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "errors.h"
+#include "MatchGroup.h"
 
 /* -------------------------------------------------------------- *
  |              Child Data Structure : FilePhraseCount
@@ -15,10 +16,10 @@ int search ( MatchGroup *m, int filenum );
  
 FilePhraseCount* FilePhraseCount_new ( int filenum )
 {
-        FilePhraseCount *fpc = malloc( sizeof( FilePhraseCount )  );
+        FilePhraseCount *fpc = malloc_cre( sizeof( FilePhraseCount )  );
         fpc-> file_num  = filenum;
         fpc-> capacity  = 1;
-        fpc-> line_nums = malloc( sizeof( int ) * 1 );
+        fpc-> line_nums = malloc_cre( sizeof( int ) * 1 );
         fpc-> length = 0;
         return fpc;       
 }
@@ -31,7 +32,7 @@ int  FilePhraseCount_data ( FilePhraseCount* fpc, int **datapp )
         int i;
         int length      = fpc-> length;
         int *line_nums  = fpc-> line_nums;
-        *datapp         = malloc ( sizeof( int ) * length ); 
+        *datapp         = malloc_cre ( sizeof( int ) * length ); 
         
         for( i = 0; i < length; i++ ){
                 (*datapp)[i] = line_nums[i];
@@ -46,8 +47,8 @@ void FilePhraseCount_copy ( FilePhraseCount*  fpc,
 {
         int i;
         int length = fpc-> length;
-        (*dest) = malloc( sizeof( FilePhraseCount ) );
-        int *line_nums_copy = malloc( sizeof( int ) * length ); 
+        (*dest) = malloc_cre( sizeof( FilePhraseCount ) );
+        int *line_nums_copy = malloc_cre( sizeof( int ) * length ); 
         int *line_nums      = fpc-> line_nums;
         (*dest)-> file_num  = fpc-> file_num; 
         (*dest)-> capacity  = fpc-> capacity;
@@ -73,7 +74,7 @@ void FilePhraseCount_add  ( FilePhraseCount *fpc, int linenum )
         fpc-> length++;
         if ( fpc-> length == fpc-> capacity ) {
                 fpc-> capacity = 2 * (fpc-> capacity);
-                fpc-> line_nums = realloc( fpc-> line_nums
+                fpc-> line_nums = realloc_cre( fpc-> line_nums
                                 , sizeof( int ) * fpc-> capacity); 
         }
         fpc-> line_nums[ fpc->length-1 ] = linenum;
@@ -87,7 +88,7 @@ void FilePhraseCount_add  ( FilePhraseCount *fpc, int linenum )
 
 MatchGroup* MatchGroup_new( const char* match_phrase )
 {
-        MatchGroup* match = malloc( sizeof( MatchGroup )  );
+        MatchGroup* match = malloc_cre( sizeof( MatchGroup )  );
         match-> phrase = match_phrase;
         
         Seq_T sequence = Seq_new( 1 );
@@ -121,15 +122,13 @@ char MatchGroup_add( MatchGroup *m, int filenum, int linenum )
 /* */
 int  MatchGroup_data ( MatchGroup* m, FilePhraseCount*** fpc_array )
 {
-        /* TODO: FIND THE MEMORY LEAK (SINGLE POINTER MISSING?! 
-         * HIGHLY POSSIBLE HERE */
         int i;
         int leng = Seq_length( m->file_phrase_counts );
-        (*fpc_array) = malloc ( sizeof( FilePhraseCount* ) * leng ); 
+        (*fpc_array) = malloc_cre ( sizeof( FilePhraseCount* ) * leng ); 
         FilePhraseCount *fpc;
         for( i = 0; i < leng; i++ ){
                 fpc = Seq_get( m-> file_phrase_counts, i );
-                FilePhraseCount_copy ( fpc, &((*fpc_array)[i])  ); /* */ 
+                FilePhraseCount_copy ( fpc, &((*fpc_array)[i])  ); 
         }
         return leng;
 }
@@ -150,24 +149,9 @@ int search ( MatchGroup *m, int filenum )
         return -1;
 }
 
-/* prints Matchgroup */
-void MatchGroup_print( MatchGroup *m )
-{
-        int i;
-        int leng = Seq_length( m-> file_phrase_counts );
-        FilePhraseCount *fpc;
-        
-        printf( "%s\n", m-> phrase );
-        for ( i = 0; i < leng; i++ ) {
-                fpc = Seq_get( m-> file_phrase_counts, i );
-                printf("f:%i\t\n", fpc->file_num  );
-        }
-}
-
 /* Frees Memory */
 void MatchGroup_free ( MatchGroup* m )
 {
-        /* TODO: make line_nums an array */
         FilePhraseCount *fpc;
         
         while ( Seq_length( m-> file_phrase_counts ) != 0 ){
@@ -178,8 +162,6 @@ void MatchGroup_free ( MatchGroup* m )
         Seq_free( &(m-> file_phrase_counts) );
         free( m );
 }
-
-
 
 
 

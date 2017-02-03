@@ -1,0 +1,12 @@
+
+Implement:
+        Matchgroups
+        Get Hash function from atoms
+        Write some middle functions for the main file
+        test Simlines
+        test Brightness
+
+        make sure it fits all the standards.
+        
+
+

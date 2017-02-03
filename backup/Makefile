@@ -41,7 +41,7 @@ IFLAGS = -I. -I$(COMP40)/include -I$(HANSON)/include/cii
 
 
 # the next three lines enable you to compile and link against course software
-CFLAGS =  -g -std=c99 -Wall -Wextra -Werror -Wfatal-errors -pedantic $(IFLAGS)
+CFLAGS =  -g -std=c99 -Wall -Wextra -Wfatal-errors -pedantic $(IFLAGS)
 LIBS = $(CIILIBS) -lm    
 LFLAGS = -L$(COMP40)/lib64
 
@@ -87,8 +87,9 @@ clean:
 brightness: brightness.o
 	$(CC) $(LDFLAGS) -o brightness brightness.o $(LDLIBS)
 
-simlines_test: main.o
-	$(CC) $(LDFLAGS) -o test_simlines main.o $(LDLIBS)
+simlines_test: main.o readaline.o clean_line.o
+	$(CC) $(LDFLAGS) -o test_simlines main.o MatchGroup.o readaline.o\
+		clean_line.o $(LDLIBS)
 
 simlines: simlines.o readaline.o
 	$(CC) $(LDFLAGS) -o simlines  simlines.o readaline.o $(LDLIBS)

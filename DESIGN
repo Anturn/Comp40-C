@@ -30,7 +30,7 @@ Data Structures:
                 
                 | struct MatchGroup {
                 |         const   char*   match_phrase;
-                |         struct  void*   file_phrase_counts;
+                |         struc   Seq_T   file_phrase_counts;
                 | };
                 | 
                 | /*

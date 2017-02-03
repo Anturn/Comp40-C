@@ -41,7 +41,7 @@ IFLAGS = -I. -I$(COMP40)/include -I$(HANSON)/include/cii
 
 
 # the next three lines enable you to compile and link against course software
-CFLAGS =  -g -std=c99 -Wall -Wextra -Werror -Wfatal-errors -pedantic $(IFLAGS)
+CFLAGS =  -g -std=c99 -Wall -Wextra -Wfatal-errors -pedantic $(IFLAGS)
 LIBS = $(CIILIBS) -lm    
 LFLAGS = -L$(COMP40)/lib64
 
