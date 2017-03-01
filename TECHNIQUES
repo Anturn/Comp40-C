@@ -1,0 +1,44 @@
+TECHNIQUES
+Names:		Rui Qin and Arpan Gurung
+Last Modified:	02/14/2016
+
+
++___________________________________________________________________________+
+|                                                                           |  
+|                          *** TECHNIQUES ***                               |
+|___________________________________________________________________________|
++                                                                           +
+
+
+
+Memory management
+-----------------
+
+
+> It is very important to keep track of memory when programming. Any memory 
+that is allocated in a program must be freed, any malloc must be followed by 
+a corresponding free.
+
+
+> Thus it is useful to note the various routes that a program can take to
+confirm that memory is freed at every possible exit. This also helps to 
+track down any double frees in cases when the same pointer is freed multiple
+times. My partner and I often used a piece of paper to trace our memory.
+
+
+> Similarly, when a file is opened, it must be closed. When a file is not 
+closed at the end of a program, it can often lead to "still reachable" memory
+leak detected by valgrind.
+
+
+> My partner and I found a really useful command when we were working on this
+assignment. Running valgrind with "--leak -check=full --show-reachable=yes" 
+helped us pinpoint the location of a "still reachable" memory leak.
+
+
+> In order to do this, we need to learn how to decipher valgrind error 
+messages. Valgrind gives error messages followed by functions, file names, and 
+line numbers. We have to learn how to pick the most relevant pieces of 
+information. Implementation details and functions provided by an interface are 
+usually not relevant. And when my partner and I had trouble understanding error 
+messages, we received some help from the internet.
